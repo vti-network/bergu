@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= address %></title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #2e1e7e, #ffb6c1); /* Ganti warna latar belakang sesuai keinginan */
+            color: #ffffff;
+        }
+
+        header {
+            text-align: center;
+            padding: 50px;
+        }
+
+        nav {
+            position: fixed;
+            right: 0;
+            margin-right: 16px;
+            align-items: end;
+        }
+
+        /* navbar */
+nav a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    position: relative;
+    padding: 10px 20px;
+    margin: 0 10px;
+    transition: color 0.3s ease-in-out;
+}
+
+nav a::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background: aqua; /* Warna neon, dapat Anda sesuaikan */
+    visibility: hidden;
+    transform: scaleX(0);
+    transition: all 0.3s ease-in-out;
+}
+
+nav a:hover {
+    color: aqua; /* Warna neon pada hover, dapat Anda sesuaikan */
+}
+
+nav a:hover::before {
+    visibility: visible;
+    transform: scaleX(1);
+}
+/* nav end */
+
+        a {
+            text-decoration: none;
+            color: #dddddd;
+        }
+        a:hover {
+            color: aqua;
+        }
+
+        section {
+            text-align: center;
+            padding: 50px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #000000; /* Ganti warna latar belakang footer sesuai keinginan */
+            color: #ffffff;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 10px;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: transparent;
+            font-weight: bold;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body class="container">
+
+    <header>
+        <nav>
+            <a href="/">Back</a>
+        </nav>
+    </header>
+    <section>
+
+        <main>
+            <div class="jumbotron">
+                <table id="transactionTable">
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Operation</th>
+                            <th>Value</th>
+                            <th>Currency</th>
+                            <th>Sender</th>
+                            <th>Receiver</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Transaction data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </section>
+
+<!-- <footer>
+    <p>&copy; 2024 Futuristic Page. All rights reserved.</p>
+</footer> -->
+
+<script>
+    function truncateString(inputString, maxLength) {
+    if (inputString.length > maxLength) {
+        return inputString.substring(0, maxLength);
+    } else {
+        return inputString;
+    }
+}
+    // Fetch data from the API
+    var url = '<%= address %>';
+
+function fetchDataAndPopulateTable() {
+    fetch(`http://localhost:3000/api/d/${url}`)
+        .then(response => response.json())
+        .then(data => {
+            // Log the entire API response to the console
+            console.log('API Response:', data);
+
+            // Check if data.transactions is an array before using forEach
+            if (Array.isArray(data.transactions)) {
+                // Process the transactions and create HTML table rows
+                const tableBody = document.getElementById('transactionTable').getElementsByTagName('tbody')[0];
+                tableBody.innerHTML = ''; 
+                data.transactions.forEach(transaction => {
+                    const row = tableBody.insertRow();
+
+                    const dateCell = row.insertCell(0);
+                    dateCell.textContent = transaction.date_time;
+
+                    const optCell = row.insertCell(1);
+                    optCell.textContent = transaction.opt;
+
+                    const valueCell = row.insertCell(2);
+                    valueCell.textContent = transaction.value;
+
+                    const currencyCell = row.insertCell(3);
+                    currencyCell.textContent = transaction.currency;
+
+                    //
+                    const originalString1 = `${transaction.pengirim}`;
+                    const shortenedString1 = truncateString(originalString1, 5);
+                    const originalString2 = `${transaction.penerima}`;
+                    const shortenedString2 = truncateString(originalString2, 5);
+
+                    const senderCell = row.insertCell(4);
+                    senderCell.innerHTML = `<a href="http://localhost:3000/${transaction.pengirim}">${shortenedString1}</a>`;
+
+                    const receiverCell = row.insertCell(5);
+                    receiverCell.innerHTML = `<a href="http://localhost:3000/${transaction.penerima}">${shortenedString2}</a>`;
+                });
+            } else {
+                console.error('Invalid data structure: transactions property is not an array.');
+            }
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    }
+        
+        // Initial data fetch and table population
+        fetchDataAndPopulateTable();
+    
+        // Auto-reload every 60 seconds (adjust the interval as needed)
+        const reloadInterval = 1000; // 60 seconds
+        setInterval(fetchDataAndPopulateTable, reloadInterval);
+</script>
+
+
+
+</body>
+</html>

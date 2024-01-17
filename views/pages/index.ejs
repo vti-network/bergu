@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #2e1e7e, #ffb6c1); /* Ganti warna latar belakang sesuai keinginan */
+            color: #ffffff;
+        }
+
+        header {
+            text-align: center;
+            padding: 50px;
+        }
+
+        nav {
+            position: fixed;
+            right: 0;
+            margin-right: 16px;
+            align-items: end;
+        }
+
+        /* navbar */
+nav a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    position: relative;
+    padding: 10px 20px;
+    margin: 0 10px;
+    transition: color 0.3s ease-in-out;
+}
+
+nav a::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background: aqua; /* Warna neon, dapat Anda sesuaikan */
+    visibility: hidden;
+    transform: scaleX(0);
+    transition: all 0.3s ease-in-out;
+}
+
+nav a:hover {
+    color: aqua; /* Warna neon pada hover, dapat Anda sesuaikan */
+}
+
+nav a:hover::before {
+    visibility: visible;
+    transform: scaleX(1);
+}
+/* nav end */
+
+        a {
+            text-decoration: none;
+            color: #dddddd;
+        }
+        a:hover {
+            color: aqua;
+        }
+
+        section {
+            text-align: center;
+            padding: 50px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #000000; /* Ganti warna latar belakang footer sesuai keinginan */
+            color: #ffffff;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 10px;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: transparent;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        /* animasi coin */
+        /* .coin {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ffd700; 
+            border-radius: 50%;
+            animation: fall 5s linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        } */
+
+        /* modal form */
+        .modal {
+            display: none;
+            background: rgba(0, 0, 0, 0.5);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .close {
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: aqua;
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="container">
+
+    <header>
+        <h1>Bergu Token Network</h1>
+        <nav>
+            <a href="#" onclick="openModal()" id="walletLink">wallet</a>
+        </nav>
+    </header>
+    <div class="coin"></div>
+    <section>
+
+        <main>
+            <div class="jumbotron">
+                <table id="transactionTable">
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Operation</th>
+                            <th>Value</th>
+                            <th>Currency</th>
+                            <th>Sender</th>
+                            <th>Receiver</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Transaction data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </section>
+
+<!-- modal login-->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="email">email:</label>
+            <input type="text" id="email" name="email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="button" onclick="submitFormLOGIN()">Login</button>
+        </form>
+        <br>
+        <label>Don't have an account? Register <a href="#" onclick="register()">here</a></label>
+        <p id="loginErrorMessage" style="color: red;"></p>
+    </div>
+</div>
+
+<!-- modal register-->
+<div id="registerModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeregisterModal()">&times;</span>
+        <h2>Register</h2>
+        <form id="registerForm">
+            <label for="emailREG">Email:</label>
+            <input type="text" id="emailREG" name="emailREG" required>
+
+            <label for="passwordREG">Password:</label>
+            <input type="password" id="passwordREG" name="passwordREG" required>
+
+            <button type="button" onclick="submitFormREGISTER()">Register</button>
+        </form>
+        <br>
+        <label>Already have an account? Login <a href="#" onclick="openModal()">here</a></label>
+        <p id="registerErrorMessage" style="color: red;"></p>
+    </div>
+</div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Pemeriksaan status login saat dokumen dimuat
+            checkLoginStatus();
+        });
+
+        function checkLoginStatus() {
+            const userToken = getCookie('userToken');
+            if (userToken) {
+                // Lakukan tindakan jika pengguna sudah login
+                console.log('User is logged in');
+                // Misalnya, ubah tautan ke logout
+                document.getElementById('walletLink').innerHTML = '<a href="#" onclick="logout()">Logout</a>';
+            } else {
+                console.log('User is not logged in');
+                // Misalnya, ubah tautan ke login
+                document.getElementById('walletLink').innerHTML = '<a href="#" onclick="openModal()">Login</a>';
+            }
+        }
+
+        // Fungsi untuk mendapatkan nilai cookie berdasarkan namanya
+        function getCookie(name) {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    return cookie.substring(name.length + 1);
+                }
+            }
+            return null;
+        }
+    </script>
+<!-- modal scr -->
+<script>
+    function openModal() {
+        document.getElementById('loginModal').style.display = 'flex';
+        closeregisterModal();
+    }
+    function closeModal() {
+        document.getElementById('loginModal').style.display = 'none';
+    }
+    function submitFormLOGIN() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        // Fetch data from the server
+        fetch(`http://localhost:3000/api/l/${email}/${password}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('walletLink').innerHTML = '<a href="#" onclick="logout()">Logout</a>';
+                    closeModal();
+                    closeregisterModal();
+                } else {
+                    document.getElementById('loginErrorMessage').textContent = 'Invalid email or password';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+    }
+
+
+    
+
+
+    // reg
+    function register() {
+        document.getElementById('registerModal').style.display = 'flex';
+        closeModal();
+    }
+    function closeregisterModal() {
+        document.getElementById('registerModal').style.display = 'none';
+    }
+    function submitFormREGISTER() {
+        var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+            fetch(`http://localhost:3000/api/r/${email}/${password}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response data here (if needed)
+                    //console.log(data);
+                    alert(`register sukses\nkami mengirimkan email terkait akun detail`);
+                    // Close the registration form or perform any other actions
+                })
+                .catch(error => console.error('Error registering:', error));
+        
+
+        closeModal();
+        closeregisterModal();
+
+    }
+</script>
+
+    <script>
+        function truncateString(inputString, maxLength) {
+            if (inputString.length > maxLength) {
+                return inputString.substring(0, maxLength) + '...';
+            } else {
+                return inputString;
+            }
+        }
+    
+        function fetchDataAndPopulateTable() {
+        fetch('http://localhost:3000/api/d')
+        .then(response => response.json())
+        .then(data => {
+            // Process the transactions and create HTML table rows
+            const tableBody = document.getElementById('transactionTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; 
+            data.forEach(transactionGroup => {
+                transactionGroup.transactions.forEach(transaction => {
+                    const row = tableBody.insertRow();
+                    
+                    const dateCell = row.insertCell(0);
+                    dateCell.textContent = transaction.date_time;
+
+                    const optCell = row.insertCell(1);
+                    optCell.textContent = transaction.opt;
+
+                    const valueCell = row.insertCell(2);
+                    valueCell.textContent = transaction.value;
+
+                    const currencyCell = row.insertCell(3);
+                    currencyCell.textContent = transaction.currency;
+                    //
+                    const originalString1 = `${transaction.pengirim}`;
+                    const shortenedString1 = truncateString(originalString1, 5);
+                    const originalString2 = `${transaction.penerima}`;
+                    const shortenedString2 = truncateString(originalString2, 5);
+
+                    const senderCell = row.insertCell(4);
+                    senderCell.innerHTML = `<a href="http://localhost:3000/${transaction.pengirim}">${shortenedString1}</a>`;
+
+                    const receiverCell = row.insertCell(5);
+                    receiverCell.innerHTML = `<a href="http://localhost:3000/${transaction.penerima}">${shortenedString2}</a>`;
+                });
+            });
+        })
+        .catch(error => console.error('Error fetching data:', error));
+        }
+    
+        // Initial data fetch and table population
+        fetchDataAndPopulateTable();
+    
+        // Auto-reload every 60 seconds (adjust the interval as needed)
+        const reloadInterval = 1000; // 60 seconds
+        setInterval(fetchDataAndPopulateTable, reloadInterval);
+    </script>
+    
+
+
+</body>
+</html>
